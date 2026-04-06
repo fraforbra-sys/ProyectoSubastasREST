@@ -1,4 +1,4 @@
-# 🔨 Sistema de Subastas Distribuido - Java RMI
+# Sistema de Subastas Distribuido - Java RMI
 
 Este proyecto es una implementación de un sistema de subastas online distribuido, desarrollado en Java utilizando **RMI (Remote Method Invocation)**. Ha sido creado como aplicación práctica de los conceptos de la asignatura "Sistemas Distribuidos y Servicios Web".
 
@@ -6,7 +6,7 @@ El sistema permite a los usuarios buscar subastas, crear nuevas subastas, realiz
 
 ---
 
-## 🏛️ Arquitectura y Conceptos Aplicados
+## Arquitectura y Conceptos Aplicados
 
 El proyecto hace uso intensivo de los siguientes patrones y características de los sistemas distribuidos:
 
