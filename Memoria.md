@@ -17,45 +17,45 @@ Este proyecto implementa un sistema de subastas distribuido utilizando Java RMI 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
 │                        SERVIDOR RMI                             │
-│  ┌─────────────────────────────────────────────────────────┐   │
-│  │  GestorSubastasImpl (IGestorSubastas)                   │   │
-│  │  - Servicio Factory (crea subastas)                     │   │
-│  │  - Servicio de Autenticación                            │   │
-│  │  - Registro de subastas activas                         │   │
-│  └─────────────────────────────────────────────────────────┘   │
+│  ┌─────────────────────────────────────────────────────────┐    │
+│  │  GestorSubastasImpl (IGestorSubastas)                   │    │
+│  │  - Servicio Factory (crea subastas)                     │    │
+│  │  - Servicio de Autenticación                            │    │
+│  │  - Registro de subastas activas                         │    │
+│  └─────────────────────────────────────────────────────────┘    │
 │                              │                                  │
-│         ┌────────────────────┴────────────────────┐            │
+│         ┌────────────────────┴────────────────────┐             │
 │         │                                          │            │
-│  ┌──────▼──────┐                          ┌───────▼────────┐  │
-│  │ SubastaImpl │                          │ SubastaImpl    │  │
-│  │ (ISubasta)  │                          │ (ISubasta)     │  │
-│  │ - Stateful  │                          │ - Stateful     │  │
-│  │ - Precio    │                          │ - Observadores │  │
-│  │ - Líder     │                          │ - Callbacks    │  │
-│  └─────────────┘                          └────────────────┘  │
-│                                                                │
-│  ┌──────────────────────────────────────────────────────────┐ │
-│  │  BuscadorSubastasImpl (Stateless)                       │ │
-│  │  - Búsqueda por nombre                                  │ │
-│  │  - Búsqueda por precio                                  │ │
-│  │  - Búsqueda por tiempo restante                         │ │
-│  └──────────────────────────────────────────────────────────┘ │
+│  ┌──────▼──────┐                          ┌───────▼────────┐    │
+│  │ SubastaImpl │                          │ SubastaImpl    │    │
+│  │ (ISubasta)  │                          │ (ISubasta)     │    │
+│  │ - Stateful  │                          │ - Stateful     │    │
+│  │ - Precio    │                          │ - Observadores │    │
+│  │ - Líder     │                          │ - Callbacks    │    │
+│  └─────────────┘                          └────────────────┘    │
+│                                                                 │
+│  ┌──────────────────────────────────────────────────────────┐   │
+│  │  BuscadorSubastasImpl (Stateless)                        │   │
+│  │  - Búsqueda por nombre                                   │   │
+│  │  - Búsqueda por precio                                   │   │
+│  │  - Búsqueda por tiempo restante                          │   │
+│  └──────────────────────────────────────────────────────────┘   │
 └─────────────────────────────────────────────────────────────────┘
                               ▲
                               │ RMI (IIOP)
                               ▼
 ┌─────────────────────────────────────────────────────────────────┐
 │                          CLIENTE                                │
-│  ┌─────────────────────────────────────────────────────────┐   │
-│  │  ClienteSubastas                                        │   │
-│  │  - Interfaz de usuario (consola)                        │   │
-│  │  - Conexión al Gestor                                   │   │
-│  └─────────────────────────────────────────────────────────┘   │
-│  ┌─────────────────────────────────────────────────────────┐   │
-│  │  ObservadorClienteImpl (IObservadorCliente)             │   │
-│  │  - Exportado como objeto RMI                            │   │
-│  │  - Recibe callbacks del servidor                        │   │
-│  └─────────────────────────────────────────────────────────┘   │
+│  ┌─────────────────────────────────────────────────────────┐    │
+│  │  ClienteSubastas                                        │    │
+│  │  - Interfaz de usuario (consola)                        │    │
+│  │  - Conexión al Gestor                                   │    │
+│  └─────────────────────────────────────────────────────────┘    │
+│  ┌─────────────────────────────────────────────────────────┐    │
+│  │  ObservadorClienteImpl (IObservadorCliente)             │    │
+│  │  - Exportado como objeto RMI                            │    │
+│  │  - Recibe callbacks del servidor                        │    │
+│  └─────────────────────────────────────────────────────────┘    │
 └─────────────────────────────────────────────────────────────────┘
 ```
 
