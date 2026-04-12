@@ -1,7 +1,6 @@
 package servidor;
 
 import comun.*;
-
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
@@ -47,9 +46,11 @@ public class SubastaImpl extends UnicastRemoteObject implements ISubasta {
     }
 
     private void finalizarAutomaticamente() {
-        if (activa) {
-            System.out.println("[Subasta " + idSubasta + "] Tiempo agotado. Finalizando...");
-            activa = false;
+        synchronized (bloqueo) {
+            if (activa) {
+                System.out.println("[Subasta " + idSubasta + "] Tiempo agotado. Finalizando...");
+                activa = false;
+            }
         }
     }
 
