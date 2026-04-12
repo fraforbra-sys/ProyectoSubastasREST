@@ -1,0 +1,261 @@
+---                                                                           
+  Guía Completa - Sistema de Subastas RMI                                       
+                                                                                
+  0. Prerrequisitos - Instalar SQLite                                           
+                                                                                
+  SQLite no está instalado en el sistema. Instálalo primero:                    
+                                                                                
+  sudo apt update && sudo apt install sqlite3 -y                                
+                                                                                
+  ---                                                                           
+  1. Compilar el Proyecto                                                       
+                                                                                
+  cd /home/dit/Escritorio/SDSW/ProyectoSubastasRMI                            
+  ./compile.sh                                                                  
+                                                                                
+  Lo que hace el script:                                                        
+  - Crea el directorio bin/ si no existe                                        
+  - Compila las clases de datos (comun/)                                        
+  - Compila el servidor con sus DAOs y servicios                              
+  - Compila el cliente                                                          
+  - Copia la base de datos a bin/db/                                            
+                                                                                
+  Salida esperada:                                                              
+  ========================================                                      
+     COMPILACIÓN COMPLETADA CON ÉXITO                                           
+  ========================================                                      
+                                                                                
+  ---                                                                           
+  2. Ejecutar la Aplicación                                                     
+                                                                                
+  Orden correcto de ejecución:                                                  
+                                                                                
+  Paso 1 - Iniciar el servidor RMI:                                             
+                                                                                
+  cd /home/dit/Escritorio/SDSW/ProyectoSubastasRMI                              
+  ./run-server.sh                                                               
+                                                                                
+  Salida esperada:                                                              
+  ========================================                                      
+     INICIANDO SERVIDOR DE SUBASTAS                                             
+     Puerto: 54321                                                              
+  ========================================                                      
+                                                                                
+  [Servidor] Iniciando RMI Registry en puerto 54321...                          
+  [Servidor] RMI Registry iniciado correctamente                                
+  [Servidor] Creando GestorSubastasImpl...                                      
+  [DB] Conectado a SQLite: db/subastas.db                                       
+  [DB] Tabla 'usuarios' verificada/creada                                       
+  [Gestor] Servicio de usuarios inicializado con BD                             
+  [Gestor] Usuario migrado: admin                                               
+  [Gestor] Usuario migrado: usuario1                                            
+  ...                                                                           
+  ========================================                                      
+    SERVIDOR LISTO                                                              
+  ========================================                                      
+                                                                                
+  Paso 2 - Iniciar el cliente (en otra terminal):                               
+                                                                                
+  cd /home/dit/Escritorio/SDSW/ProyectoSubastasRMI                              
+  ./run-client.sh                                                               
+                                                                                
+  Salida esperada:                                                              
+  ========================================                                      
+     CLIENTE DE SUBASTAS RMI                                                    
+     Conectando a: localhost:54321                                              
+  ========================================                                      
+                                                                                
+  [Cliente] Buscando servicio...                                                
+  [Cliente] Conectado correctamente con el servidor                             
+  --- AUTENTICACIÓN ---                                                         
+  1. Iniciar sesión                                                             
+  2. Registrarse como nuevo usuario                                             
+  Opción:                                                                       
+                                                                                
+  ---                                                                           
+  3. Base de Datos SQLite                                                       
+                                                                                
+  Crear/verificar el fichero de base de datos                                   
+                                                                                
+  La base de datos se crea automáticamente al iniciar el servidor en:           
+  /home/dit/Escritorio/SDSW/ProyectoSubastasRMI/db/subastas.db                  
+                                                                                
+  Abrir la base de datos desde consola                                          
+                                                                                
+  cd /home/dit/Escritorio/SDSW/ProyectoSubastasRMI                              
+  sqlite3 db/subastas.db                                                        
+                                                                                
+  Comandos útiles dentro de SQLite                                              
+                                                                                
+  -- Ver todas las tablas                                                       
+  .tables                                                                       
+                                                                                
+  -- Ver estructura de una tabla                                                
+  .schema usuarios                                                              
+                                                                                
+  -- Ver todos los usuarios registrados                                         
+  SELECT id, username, created_at FROM usuarios;                                
+                                                                                
+  -- Ver un usuario específico                                                  
+  SELECT * FROM usuarios WHERE username = 'admin';                              
+                                                                                
+  -- Contar usuarios                                                            
+  SELECT COUNT(*) FROM usuarios;                                                
+                                                                                
+  -- Ver historial de pujas (si existe la tabla)                                
+  SELECT * FROM pujas;                                                          
+                                                                                
+  -- Salir de SQLite                                                            
+  .exit                                                                         
+                                                                                
+  Comprobar que los usuarios se guardan correctamente                           
+   
+  Opción A - Desde la consola SQLite:                                           
+  sqlite3 db/subastas.db "SELECT id, username, substr(password_hash, 1, 20) || 
+  '...' as hash FROM usuarios;"                                                 
+                                                                                
+  Opción B - Desde el servidor:
+  1. Inicia el servidor                                                         
+  2. Registra un nuevo usuario desde el cliente (opción 2)                      
+  3. Verifica en la terminal del servidor:                                      
+  [Gestor] Usuario registrado exitosamente: testuser                            
+                                                                                
+  Opción C - Consulta directa con formato:                                      
+  sqlite3 -header -column db/subastas.db "SELECT id, username, created_at FROM  
+  usuarios ORDER BY id DESC LIMIT 5;"                                           
+                                                                                
+  ---
+  4. Errores Comunes y Soluciones                                               
+                                                                                
+  Error: "Puerto ya en uso" (54321)                                             
+                                                                                
+  Síntoma:                                                                      
+  java.net.BindException: Address already in use                                
+                                                                                
+  Solución:                                                                     
+  # Ver qué proceso usa el puerto                                               
+  lsof -i :54321                                                                
+                                                                                
+  # Matar el proceso (reemplaza PID con el número real)                         
+  kill -9 <PID>                                                                 
+                                                                                
+  # O usar otro puerto                                                          
+  ./run-server.sh 54322                                                         
+  ./run-client.sh 54322                                                         
+                                                                                
+  Error: "ClassNotFoundException: org.sqlite.JDBC"                              
+                                                                                
+  Síntoma:                                                                      
+  [DB] ERROR: Driver de SQLite no encontrado                                    
+                                                                                
+  Solución:                                                                     
+  # Verificar que el JAR existe                                                 
+  ls -la lib/sqlite-jdbc.jar                                                    
+                                                                                
+  # Si no existe, descargarlo                                                   
+  cd lib                                                                        
+  wget https://repo1.maven.org/maven2/org/xerial/sqlite-jdbc/3.45.1.0/sqlite-jdb
+  c-3.45.1.0.jar                                                                
+                                                                                
+  Error: "Connection refused" en el cliente                                     
+                                                                                
+  Síntoma:                                                                      
+  java.rmi.ConnectException: Connection refused to host                         
+                                                                                
+  Solución:                                                                     
+  1. Asegúrate de que el servidor esté ejecutándose                             
+  2. Verifica el puerto correcto                                                
+  3. Si usas firewall:                                                          
+  sudo ufw allow 54321/tcp                                                      
+                                                                                
+  Error: "UnicastRemoteObject.exportObject"                                     
+                                                                                
+  Síntoma:                                                                      
+  java.rmi.server.ExportException: Port already in use                          
+                                                                                
+  Solución: El puerto RMI aleatorio está ocupado. Reinicia el servidor o usa:   
+  export JAVA_RMI_SERVER_PORT=54323                                             
+  ./run-server.sh                                                               
+                                                                                
+  Error: Permisos de escritura en db/                                           
+                                                                                
+  Síntoma:                                                                      
+  java.sql.SQLException: Unable to create database file                         
+                                                                                
+  Solución:                                                                     
+  chmod 755 db/                                                                 
+  chmod 664 db/subastas.db 2>/dev/null || true                                  
+                                                                                
+  ---                                                                           
+  5. Archivos de Configuración y Dependencias                                   
+                                                                                
+  Estructura requerida:                                                         
+                                                                                
+  ProyectoSubastasRMI/                                                          
+  ├── lib/                                                                      
+  │   ├── sqlite-jdbc.jar     # Driver SQLite (presente ✓)                      
+  │   ├── jbcrypt.jar         # Hash de contraseñas (presente ✓)                
+  │   ├── slf4j-api.jar       # Logging (presente ✓)                            
+  │   └── slf4j-simple.jar    # Logging simple (presente ✓)                     
+  ├── db/                                                                       
+  │   └── init.sql            # Script de inicialización (presente ✓)           
+  ├── comun/                  # Interfaces y clases de datos                    
+  ├── servidor/               # Implementación servidor                         
+  ├── cliente/                # Implementación cliente                          
+  └── bin/                    # Clases compiladas (generado)                    
+                                                                                
+  Usuarios por defecto (se crean automáticamente):                              
+                                                                                
+  ┌──────────┬────────────┐                                                     
+  │ Usuario  │ Contraseña │
+  ├──────────┼────────────┤                                                     
+  │ admin    │ admin123   │
+  ├──────────┼────────────┤                                                     
+  │ usuario1 │ pass1      │                                                     
+  ├──────────┼────────────┤                                                     
+  │ usuario2 │ pass2      │                                                     
+  ├──────────┼────────────┤                                                     
+  │ cliente  │ cliente123 │
+  └──────────┴────────────┘                                                     
+                  
+  ---                                                                           
+  6. Flujo de Uso Completo
+                                                                                
+  # Terminal 1 - Servidor
+  cd /home/dit/Escritorio/SDSW/ProyectoSubastasRMI                              
+  ./compile.sh                                                                  
+  ./run-server.sh                                                               
+                                                                                
+  # Terminal 2 - Cliente                                                        
+  cd /home/dit/Escritorio/SDSW/ProyectoSubastasRMI                              
+  ./run-client.sh                                                               
+  # Opción 2 → Registrarse → crear usuario                                      
+  # Opción 1 → Login con admin/admin123                                         
+                                                                                
+  # Terminal 3 - Ver base de datos                                              
+  cd /home/dit/Escritorio/SDSW/ProyectoSubastasRMI                              
+  sqlite3 db/subastas.db                                                        
+  sqlite> SELECT * FROM usuarios;                                               
+  sqlite> .tables                                                               
+  sqlite> .exit                                                                 
+                                                                                
+  ---                                                                           
+  7. Verificación Rápida                                                        
+                                                                                
+  # 1. Verificar Java
+  java -version                                                                 
+                                                                                
+  # 2. Verificar SQLite                                                         
+  sqlite3 --version                                                             
+                                                                                
+  # 3. Compilar                                                                 
+  ./compile.sh                                                                  
+                                                                                
+  # 4. Verificar estructura bin/                                                
+  ls -la bin/                                                                   
+                                                                                
+  # 5. Verificar librerías                                                      
+  ls -la lib/*.jar                                                              
+                                                                                
+  # 6. Verificar script SQL                                                     
+  cat db/init.sql           

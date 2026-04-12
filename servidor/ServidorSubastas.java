@@ -9,7 +9,7 @@ import java.rmi.registry.LocateRegistry;
  * Inicia el rmiregistry, crea la instancia del gestor y la registra.
  *
  * Uso: java servidor.ServidorSubastas [puerto]
- * Si no se especifica puerto, usa el 1099 por defecto.
+ * Si no se especifica puerto, usa el 54321 por defecto.
  */
 public class ServidorSubastas {
 

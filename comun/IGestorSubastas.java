@@ -20,6 +20,24 @@ public interface IGestorSubastas extends Remote {
     boolean autenticar(String usuario, String password) throws RemoteException;
 
     /**
+     * Registra un nuevo usuario en el sistema.
+     * @param username Nombre de usuario deseado
+     * @param password Contraseña (será almacenada como hash)
+     * @return true si el registro fue exitoso
+     * @throws RemoteException si hay error de comunicación
+     * @throws IllegalArgumentException si el usuario ya existe o los datos son inválidos
+     */
+    boolean registrarUsuario(String username, String password) throws RemoteException;
+
+    /**
+     * Verifica si un nombre de usuario ya está registrado.
+     * @param username Nombre de usuario a verificar
+     * @return true si el usuario ya existe
+     * @throws RemoteException si hay error de comunicación
+     */
+    boolean existeUsuario(String username) throws RemoteException;
+
+    /**
      * Crea una nueva subasta para el artículo especificado.
      * Método Factory que devuelve una referencia remota a la nueva subasta.
      * @param articulo El artículo a subastar

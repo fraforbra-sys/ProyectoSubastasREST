@@ -19,12 +19,26 @@ if [ -z "$HOST" ]; then
 HOST=localhost
 fi
 
+# Configurar classpath con librerías externas
+
+LIB_DIR="lib"
+CLASSPATH="bin"
+
+if [ -d "$LIB_DIR" ]; then
+    for jar in $LIB_DIR/*.jar; do
+        if [ -f "$jar" ]; then
+            CLASSPATH="$CLASSPATH:$jar"
+        fi
+    done
+fi
+
 echo "========================================"
 echo "   INICIANDO CLIENTE DE SUBASTAS"
 echo "   Conectando a: $HOST:$PUERTO"
+echo "   Classpath: $CLASSPATH"
 echo "========================================"
 echo ""
 
 # Iniciar cliente
 
-java -cp bin cliente.ClienteSubastas $PUERTO $HOST
+java -cp "$CLASSPATH" cliente.ClienteSubastas $PUERTO $HOST

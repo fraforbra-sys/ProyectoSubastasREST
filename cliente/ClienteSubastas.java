@@ -25,7 +25,7 @@ public class ClienteSubastas {
     private static final Scanner scanner = new Scanner(System.in);
 
     public static void main(String[] args) {
-        int puerto = 1099;
+        int puerto = 54321; // Puerto por defecto
         String host = "localhost";
 
         if (args.length >= 1) {
@@ -71,7 +71,18 @@ public class ClienteSubastas {
 
     private static void autenticar() {
         System.out.println("\n--- AUTENTICACIÓN ---");
-        System.out.print("Usuario: ");
+        System.out.println("1. Iniciar sesión");
+        System.out.println("2. Registrarse como nuevo usuario");
+        System.out.print("Opción: ");
+
+        String opcion = scanner.nextLine().trim();
+
+        if ("2".equals(opcion)) {
+            registrarNuevoUsuario();
+        }
+
+        // Proceso de login (después del registro o si eligió opción 1)
+        System.out.print("\nUsuario: ");
         String usuario = scanner.nextLine().trim();
         System.out.print("Contraseña: ");
         String password = scanner.nextLine().trim();
@@ -89,6 +100,67 @@ public class ClienteSubastas {
         } catch (Exception e) {
             System.err.println("Error en autenticación: " + e.getMessage());
             System.exit(1);
+        }
+    }
+
+    private static void registrarNuevoUsuario() {
+        System.out.println("\n--- REGISTRO DE NUEVO USUARIO ---");
+        System.out.println("Requisitos:");
+        System.out.println("  - Nombre de usuario: 3-50 caracteres (letras, números, guiones)");
+        System.out.println("  - Contraseña: mínimo 4 caracteres");
+        System.out.println();
+
+        String username;
+        String password;
+        String passwordConfirm;
+
+        // Obtener nombre de usuario válido
+        while (true) {
+            System.out.print("Nombre de usuario deseado: ");
+            username = scanner.nextLine().trim();
+
+            try {
+                // Verificar si ya existe
+                if (gestor.existeUsuario(username)) {
+                    System.out.println("El usuario '" + username + "' ya está registrado. Intente otro.");
+                    continue;
+                }
+                break; // Nombre disponible
+            } catch (Exception e) {
+                System.out.println("Error al verificar usuario: " + e.getMessage());
+            }
+        }
+
+        // Obtener contraseña válida
+        while (true) {
+            System.out.print("Contraseña: ");
+            password = scanner.nextLine().trim();
+
+            if (password.length() < 4) {
+                System.out.println("La contraseña debe tener al menos 4 caracteres.");
+                continue;
+            }
+
+            System.out.print("Confirmar contraseña: ");
+            passwordConfirm = scanner.nextLine().trim();
+
+            if (!password.equals(passwordConfirm)) {
+                System.out.println("Las contraseñas no coinciden. Intente de nuevo.");
+                continue;
+            }
+            break; // Contraseña válida y confirmada
+        }
+
+        // Intentar registrar
+        try {
+            boolean exito = gestor.registrarUsuario(username, password);
+            if (exito) {
+                System.out.println("\n¡Registro exitoso! Ahora puede iniciar sesión.");
+            } else {
+                System.out.println("\nRegistro fallido. Intente de nuevo.");
+            }
+        } catch (Exception e) {
+            System.err.println("Error en registro: " + e.getMessage());
         }
     }
 

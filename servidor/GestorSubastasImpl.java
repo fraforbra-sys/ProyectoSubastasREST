@@ -1,9 +1,13 @@
 package servidor;
 
 import comun.*;
+import servidor.dao.DatabaseManager;
+import servidor.dao.UsuarioDAO;
+import servidor.servicio.ServicioUsuarios;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,7 +23,10 @@ import java.util.stream.Collectors;
 public class GestorSubastasImpl extends UnicastRemoteObject implements IGestorSubastas {
     private static final long serialVersionUID = 1L;
 
-    // Mapa de usuarios válidos (en producción esto iría a una base de datos)
+    // Servicio de gestión de usuarios (con base de datos)
+    private final ServicioUsuarios servicioUsuarios;
+
+    // Mapa de usuarios válidos en memoria para caché de usuarios cargados desde BD
     private final Map<String, String> usuariosValidos;
 
     // Almacén de subastas activas (ConcurrentHashMap para acceso thread-safe)
@@ -30,17 +37,54 @@ public class GestorSubastasImpl extends UnicastRemoteObject implements IGestorSu
 
     public GestorSubastasImpl() throws RemoteException {
         super();
+
+        // Inicializar la base de datos y el servicio de usuarios
+        ServicioUsuarios su;
+        try {
+            su = ServicioUsuarios.crearDesdeDatabaseManager();
+            System.out.println("[Gestor] Servicio de usuarios inicializado con BD");
+        } catch (SQLException e) {
+            System.err.println("[Gestor] ERROR al inicializar BD de usuarios: " + e.getMessage());
+            throw new RemoteException("No se pudo inicializar el sistema de usuarios", e);
+        }
+        this.servicioUsuarios = su;
+
         this.usuariosValidos = new HashMap<>();
         this.subastasActivas = new ConcurrentHashMap<>();
         this.buscador = new BuscadorSubastasImpl(subastasActivas);
 
-        // Usuarios de prueba (en producción usar autenticación real)
-        usuariosValidos.put("admin", "admin123");
-        usuariosValidos.put("usuario1", "pass1");
-        usuariosValidos.put("usuario2", "pass2");
-        usuariosValidos.put("cliente", "cliente123");
+        // Usuarios de prueba iniciales (se migran a BD si no existen)
+        // En producción, estos usuarios deberían estar solo en BD
+        migrarUsuariosSiEsNecesario();
 
-        System.out.println("[Gestor] Servidor inicializado con " + usuariosValidos.size() + " usuarios");
+        System.out.println("[Gestor] Servidor inicializado");
+    }
+
+    /**
+     * Migra los usuarios de prueba a la base de datos si no existen.
+     * Método temporal para compatibilidad.
+     */
+    private void migrarUsuariosSiEsNecesario() {
+        Map<String, String> usuariosPrueba = new HashMap<>();
+        usuariosPrueba.put("admin", "admin123");
+        usuariosPrueba.put("usuario1", "pass1");
+        usuariosPrueba.put("usuario2", "pass2");
+        usuariosPrueba.put("cliente", "cliente123");
+
+        for (Map.Entry<String, String> entry : usuariosPrueba.entrySet()) {
+            try {
+                if (!servicioUsuarios.existeUsuario(entry.getKey())) {
+                    servicioUsuarios.registrarUsuario(entry.getKey(), entry.getValue());
+                    System.out.println("[Gestor] Usuario migrado: " + entry.getKey());
+                }
+                // Cargar a memoria para caché
+                usuariosValidos.put(entry.getKey(), entry.getValue());
+            } catch (IllegalArgumentException e) {
+                // Ya existe, ignorar
+            } catch (Exception e) {
+                System.err.println("[Gestor] Error al migrar usuario " + entry.getKey() + ": " + e.getMessage());
+            }
+        }
     }
 
     @Override
@@ -48,16 +92,39 @@ public class GestorSubastasImpl extends UnicastRemoteObject implements IGestorSu
         if (usuario == null || password == null) {
             return false;
         }
-        String passwordAlmacenado = usuariosValidos.get(usuario);
-        boolean autenticado = passwordAlmacenado != null && passwordAlmacenado.equals(password);
 
-        if (autenticado) {
-            System.out.println("[Gestor] Usuario '" + usuario + "' autenticado correctamente");
-        } else {
-            System.out.println("[Gestor] Intento de autenticación fallido para usuario: " + usuario);
+        // Usar el servicio de usuarios para validar contra la base de datos
+        try {
+            return servicioUsuarios.validarLogin(usuario, password);
+        } catch (Exception e) {
+            System.err.println("[Gestor] Error en autenticación: " + e.getMessage());
+            return false;
         }
+    }
 
-        return autenticado;
+    @Override
+    public boolean registrarUsuario(String username, String password) throws RemoteException {
+        try {
+            servicioUsuarios.registrarUsuario(username, password);
+            System.out.println("[Gestor] Usuario registrado exitosamente: " + username);
+            return true;
+        } catch (IllegalArgumentException e) {
+            System.out.println("[Gestor] Registro fallido: " + e.getMessage());
+            return false;
+        } catch (Exception e) {
+            System.err.println("[Gestor] Error al registrar usuario: " + e.getMessage());
+            throw new RemoteException("Error al registrar usuario: " + e.getMessage());
+        }
+    }
+
+    @Override
+    public boolean existeUsuario(String username) throws RemoteException {
+        try {
+            return servicioUsuarios.existeUsuario(username);
+        } catch (Exception e) {
+            System.err.println("[Gestor] Error al verificar existencia de usuario: " + e.getMessage());
+            throw new RemoteException("Error al verificar existencia de usuario", e);
+        }
     }
 
     @Override
