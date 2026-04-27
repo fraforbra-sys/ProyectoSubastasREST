@@ -92,6 +92,7 @@ public class DatabaseManager {
      * Crea las tablas necesarias en la base de datos.
      */
     private void crearTablas() throws SQLException {
+        // Tabla de usuarios
         String sqlUsuarios = """
             CREATE TABLE IF NOT EXISTS usuarios (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -101,15 +102,41 @@ public class DatabaseManager {
             )
         """;
 
-        String sqlIndex = """
+        // Tabla de subastas completadas
+        String sqlSubastas = """
+            CREATE TABLE IF NOT EXISTS subastas_completadas (
+                id_subasta TEXT PRIMARY KEY,
+                nombre_articulo TEXT NOT NULL,
+                precio_final REAL NOT NULL,
+                foto TEXT,
+                comprador TEXT,
+                fecha_finalizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        """;
+
+        // Índices
+        String sqlIndexUsuarios = """
             CREATE INDEX IF NOT EXISTS idx_usuarios_username
             ON usuarios(username)
         """;
 
+        String sqlIndexSubastasComprador = """
+            CREATE INDEX IF NOT EXISTS idx_subastas_comprador
+            ON subastas_completadas(comprador)
+        """;
+
+        String sqlIndexSubastasFecha = """
+            CREATE INDEX IF NOT EXISTS idx_subastas_fecha
+            ON subastas_completadas(fecha_finalizacion)
+        """;
+
         try (Statement stmt = conexion.createStatement()) {
             stmt.execute(sqlUsuarios);
-            stmt.execute(sqlIndex);
-            System.out.println("[DB] Tabla 'usuarios' verificada/creada");
+            stmt.execute(sqlSubastas);
+            stmt.execute(sqlIndexUsuarios);
+            stmt.execute(sqlIndexSubastasComprador);
+            stmt.execute(sqlIndexSubastasFecha);
+            System.out.println("[DB] Tablas 'usuarios' y 'subastas_completadas' verificadas/creadas");
         }
     }
 
@@ -154,6 +181,15 @@ public class DatabaseManager {
      */
     public UsuarioDAO crearUsuarioDAO() throws SQLException {
         return new UsuarioDAO(getConexion());
+    }
+
+    /**
+     * Crea un nuevo DAO de subastas completadas usando esta conexión.
+     * @return Nueva instancia de SubastaCompletadaDAO
+     * @throws SQLException Si la conexión no está disponible
+     */
+    public SubastaCompletadaDAO crearSubastaCompletadaDAO() throws SQLException {
+        return new SubastaCompletadaDAO(getConexion());
     }
 
     /**

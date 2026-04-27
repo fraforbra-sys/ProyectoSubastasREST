@@ -2,6 +2,7 @@ package servidor;
 
 import comun.*;
 import servidor.dao.DatabaseManager;
+import servidor.dao.SubastaCompletadaDAO;
 import servidor.dao.UsuarioDAO;
 import servidor.servicio.ServicioUsuarios;
 
@@ -185,5 +186,65 @@ public class GestorSubastasImpl extends UnicastRemoteObject implements IGestorSu
      */
     public BuscadorSubastasImpl getBuscador() {
         return buscador;
+    }
+
+    // ============================================
+    // IMPLEMENTACIÓN DE MÉTODOS PARA SUBASTAS COMPLETADAS
+    // ============================================
+
+    @Override
+    public List<SubastaCompletada> obtenerHistorialSubastas() throws RemoteException {
+        try {
+            DatabaseManager dbManager = DatabaseManager.getInstancia();
+            SubastaCompletadaDAO dao = dbManager.crearSubastaCompletadaDAO();
+            return dao.obtenerTodas();
+        } catch (SQLException e) {
+            System.err.println("[Gestor] Error al obtener historial de subastas: " + e.getMessage());
+            throw new RemoteException("Error al obtener historial de subastas", e);
+        }
+    }
+
+    @Override
+    public List<SubastaCompletada> obtenerSubastasPorComprador(String comprador) throws RemoteException {
+        if (comprador == null || comprador.trim().isEmpty()) {
+            throw new RemoteException("Nombre de comprador inválido");
+        }
+
+        try {
+            DatabaseManager dbManager = DatabaseManager.getInstancia();
+            SubastaCompletadaDAO dao = dbManager.crearSubastaCompletadaDAO();
+            return dao.obtenerPorComprador(comprador);
+        } catch (SQLException e) {
+            System.err.println("[Gestor] Error al obtener subastas por comprador: " + e.getMessage());
+            throw new RemoteException("Error al obtener subastas por comprador", e);
+        }
+    }
+
+    @Override
+    public SubastaCompletada obtenerSubastaPorId(String idSubasta) throws RemoteException {
+        if (idSubasta == null || idSubasta.trim().isEmpty()) {
+            throw new RemoteException("ID de subasta inválido");
+        }
+
+        try {
+            DatabaseManager dbManager = DatabaseManager.getInstancia();
+            SubastaCompletadaDAO dao = dbManager.crearSubastaCompletadaDAO();
+            return dao.obtenerPorId(idSubasta);
+        } catch (SQLException e) {
+            System.err.println("[Gestor] Error al obtener subasta por ID: " + e.getMessage());
+            throw new RemoteException("Error al obtener subasta por ID", e);
+        }
+    }
+
+    @Override
+    public int getNumeroSubastasCompletadas() throws RemoteException {
+        try {
+            DatabaseManager dbManager = DatabaseManager.getInstancia();
+            SubastaCompletadaDAO dao = dbManager.crearSubastaCompletadaDAO();
+            return dao.contarTotal();
+        } catch (SQLException e) {
+            System.err.println("[Gestor] Error al contar subastas completadas: " + e.getMessage());
+            throw new RemoteException("Error al contar subastas completadas", e);
+        }
     }
 }

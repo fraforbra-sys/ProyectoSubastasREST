@@ -41,8 +41,20 @@ fi
 # Compilar servidor (incluye dao y servicio)
 
 echo "[2/5] Compilando clases del servidor (servidor/ y subdirectorios)..."
-javac -cp "$CLASSPATH" -d bin servidor/**/*.java servidor/*.java 2>/dev/null || \
-javac -cp "$CLASSPATH" -d bin servidor/dao/*.java servidor/servicio/*.java servidor/*.java
+# Primero compilar DAOs (sin dependencias del servidor)
+javac -cp "$CLASSPATH" -d bin servidor/dao/*.java
+if [ $? -ne 0 ]; then
+echo "ERROR: Fallo en la compilación de servidor/dao/"
+exit 1
+fi
+# Luego compilar servicio
+javac -cp "$CLASSPATH" -d bin servidor/servicio/*.java
+if [ $? -ne 0 ]; then
+echo "ERROR: Fallo en la compilación de servidor/servicio/"
+exit 1
+fi
+# Finalmente compilar clases principales del servidor
+javac -cp "$CLASSPATH" -d bin servidor/*.java
 if [ $? -ne 0 ]; then
 echo "ERROR: Fallo en la compilación del servidor"
 exit 1

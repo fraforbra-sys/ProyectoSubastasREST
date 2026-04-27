@@ -1,8 +1,13 @@
 package servidor;
 
 import comun.*;
+import servidor.dao.DatabaseManager;
+import servidor.dao.SubastaCompletadaDAO;
+
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -50,6 +55,7 @@ public class SubastaImpl extends UnicastRemoteObject implements ISubasta {
             if (activa) {
                 System.out.println("[Subasta " + idSubasta + "] Tiempo agotado. Finalizando...");
                 activa = false;
+                registrarEnBaseDeDatos();
             }
         }
     }
@@ -197,7 +203,48 @@ public class SubastaImpl extends UnicastRemoteObject implements ISubasta {
                 activa = false;
                 System.out.println("[Subasta " + idSubasta + "] Finalizada manualmente");
                 scheduler.shutdown();
+                registrarEnBaseDeDatos();
             }
+        }
+    }
+
+    /**
+     * Registra la subasta completada en la base de datos.
+     * Se llama automáticamente cuando la subasta finaliza (por tiempo o manualmente).
+     */
+    private void registrarEnBaseDeDatos() {
+        try {
+            DatabaseManager dbManager = DatabaseManager.getInstancia();
+            SubastaCompletadaDAO dao = dbManager.crearSubastaCompletadaDAO();
+
+            // Obtener datos de la subasta
+            String nombreArticulo = articulo.getNombre();
+            String foto = articulo.getUrlImagen();
+            double precioFinal = precioActual;
+            String comprador = liderActual; // Puede ser null si no hubo pujas
+
+            // Solo registrar si hay un comprador (si hubo pujas)
+            if (comprador != null) {
+                SubastaCompletada subasta = new SubastaCompletada(
+                    idSubasta,
+                    nombreArticulo,
+                    precioFinal,
+                    foto,
+                    comprador,
+                    new Timestamp(System.currentTimeMillis())
+                );
+
+                dao.insertarSubasta(subasta);
+                System.out.println("[Subasta " + idSubasta + "] Registrada en BD: " +
+                                   nombreArticulo + " -> " + comprador + " (" + precioFinal + "€)");
+            } else {
+                System.out.println("[Subasta " + idSubasta + "] No se registra en BD: sin pujas");
+            }
+
+        } catch (SQLException e) {
+            System.err.println("[Subasta " + idSubasta + "] Error al registrar en BD: " + e.getMessage());
+        } catch (Exception e) {
+            System.err.println("[Subasta " + idSubasta + "] Excepción al registrar en BD: " + e.getMessage());
         }
     }
 

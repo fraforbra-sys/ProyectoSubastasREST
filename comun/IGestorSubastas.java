@@ -68,4 +68,38 @@ public interface IGestorSubastas extends Remote {
      * @throws RemoteException si hay error de comunicación
      */
     int getNumeroSubastasActivas() throws RemoteException;
+
+    // ============================================
+    // MÉTODOS PARA SUBASTAS COMPLETADAS (HISTORIAL)
+    // ============================================
+
+    /**
+     * Obtiene todas las subastas completadas almacenadas en el historial.
+     * @return Lista de subastas completadas con sus datos
+     * @throws RemoteException si hay error de comunicación
+     */
+    List<SubastaCompletada> obtenerHistorialSubastas() throws RemoteException;
+
+    /**
+     * Obtiene las subastas completadas ganadas por un comprador específico.
+     * @param comprador Nombre del comprador
+     * @return Lista de subastas ganadas por ese usuario
+     * @throws RemoteException si hay error de comunicación
+     */
+    List<SubastaCompletada> obtenerSubastasPorComprador(String comprador) throws RemoteException;
+
+    /**
+     * Obtiene una subasta completada por su ID.
+     * @param idSubasta Identificador de la subasta
+     * @return La subasta completada o null si no existe
+     * @throws RemoteException si hay error de comunicación
+     */
+    SubastaCompletada obtenerSubastaPorId(String idSubasta) throws RemoteException;
+
+    /**
+     * Obtiene el número total de subastas completadas.
+     * @return Número total de subastas finalizadas
+     * @throws RemoteException si hay error de comunicación
+     */
+    int getNumeroSubastasCompletadas() throws RemoteException;
 }
