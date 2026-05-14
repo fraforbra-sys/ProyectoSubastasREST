@@ -44,3 +44,6 @@ Thumbs.db
 *.bak
 *.swp
 *~
+
+# Base de datos SQLite
+db/*.db

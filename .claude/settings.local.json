@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mvn clean *)",
+      "PowerShell(mvn clean *)",
+      "PowerShell(java *)",
+      "PowerShell($env:JAVA_HOME; where.exe java 2>$null)"
+    ]
+  }
+}
