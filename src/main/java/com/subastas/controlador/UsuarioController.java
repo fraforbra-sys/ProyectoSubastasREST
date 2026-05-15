@@ -1,12 +1,11 @@
 package com.subastas.controlador;
 
+import com.subastas.modelo.LoginRequest;
 import com.subastas.servicio.ServicioUsuarios;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.Map;
 
 @RestController
 @RequestMapping("/usuario")
@@ -19,9 +18,9 @@ public class UsuarioController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody Map<String, String> body) {
-        String username = body.get("username");
-        String password = body.get("password");
+    public ResponseEntity<String> login(@RequestBody LoginRequest body) {
+        String username = body.getUsername();
+        String password = body.getPassword();
         if (username == null || password == null) {
             return ResponseEntity.badRequest().body("username y password requeridos");
         }
@@ -33,9 +32,9 @@ public class UsuarioController {
     }
 
     @PostMapping("/registro")
-    public ResponseEntity<String> registro(@RequestBody Map<String, String> body) {
-        String username = body.get("username");
-        String password = body.get("password");
+    public ResponseEntity<String> registro(@RequestBody LoginRequest body) {
+        String username = body.getUsername();
+        String password = body.getPassword();
         if (username == null || password == null) {
             return ResponseEntity.badRequest().body("username y password requeridos");
         }
