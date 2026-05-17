@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SubastasApp – Subastas activas</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+      <a class="navbar-brand fw-bold" href="/subastas.html">
+        <i class="bi bi-hammer"></i> SubastasApp
+      </a>
+      <div class="d-flex align-items-center gap-3 ms-auto">
+        <span class="text-white d-none d-sm-inline">
+          <i class="bi bi-person-circle"></i> <span id="navUser"></span>
+        </span>
+        <a href="/historial.html" class="btn btn-outline-light btn-sm">
+          <i class="bi bi-clock-history"></i> Historial
+        </a>
+        <button id="btnLogout" class="btn btn-outline-light btn-sm">
+          <i class="bi bi-box-arrow-right"></i> Cerrar sesión
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container-fluid px-4 mt-4">
+
+    <!-- Search panel -->
+    <div class="card shadow-sm mb-4">
+      <div class="card-header bg-white fw-semibold">
+        <i class="bi bi-search text-primary"></i> Buscar subastas
+      </div>
+      <div class="card-body">
+        <div class="row g-3">
+
+          <!-- Text -->
+          <div class="col-12 col-md-4">
+            <label class="form-label small fw-semibold">Por nombre</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="bi bi-type"></i></span>
+              <input type="text" id="searchText" class="form-control" placeholder="Nombre del artículo...">
+              <button class="btn btn-outline-primary" id="btnSearchText" title="Buscar por nombre">
+                <i class="bi bi-search"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Price range -->
+          <div class="col-12 col-md-4">
+            <label class="form-label small fw-semibold">Por rango de precio (€)</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="bi bi-currency-euro"></i></span>
+              <input type="number" id="precioMin" class="form-control" placeholder="Mín" min="0" step="0.01">
+              <input type="number" id="precioMax" class="form-control" placeholder="Máx" min="0" step="0.01">
+              <button class="btn btn-outline-primary" id="btnSearchPrecio" title="Buscar por precio">
+                <i class="bi bi-search"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Time remaining -->
+          <div class="col-12 col-md-4">
+            <label class="form-label small fw-semibold">Tiempo restante máx. (segundos)</label>
+            <div class="input-group">
+              <span class="input-group-text"><i class="bi bi-clock"></i></span>
+              <input type="number" id="tiempoSeg" class="form-control" placeholder="Ej: 60" min="1">
+              <button class="btn btn-outline-primary" id="btnSearchTiempo" title="Buscar por tiempo">
+                <i class="bi bi-search"></i>
+              </button>
+            </div>
+          </div>
+
+        </div>
+        <div class="mt-2">
+          <button class="btn btn-sm btn-outline-secondary" id="btnResetSearch">
+            <i class="bi bi-x-circle"></i> Limpiar filtros
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty state -->
+    <div id="emptyState" class="d-none text-center py-5">
+      <i class="bi bi-inbox display-1 text-muted"></i>
+      <p class="text-muted mt-3 fs-5">No hay subastas activas</p>
+      <p class="text-muted small">Crea una nueva subasta con el botón +</p>
+    </div>
+
+    <!-- Cards grid -->
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xl-4 g-4" id="subastasGrid">
+      <!-- Loaded by JS -->
+    </div>
+
+    <div class="pb-5 mb-5"></div>
+  </div>
+
+  <!-- FAB -->
+  <button class="btn btn-primary fab"
+          data-bs-toggle="modal" data-bs-target="#nuevaSubastaModal"
+          title="Nueva subasta">
+    <i class="bi bi-plus-lg"></i>
+  </button>
+
+  <!-- Modal: Nueva subasta -->
+  <div class="modal fade" id="nuevaSubastaModal" tabindex="-1" aria-labelledby="modalNuevaLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title" id="modalNuevaLabel">
+            <i class="bi bi-hammer"></i> Nueva subasta
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div id="modalAlert"></div>
+          <form id="nuevaSubastaForm">
+            <div class="mb-3">
+              <label class="form-label small fw-semibold">
+                ID artículo <span class="text-muted fw-normal">(opcional — se genera automáticamente)</span>
+              </label>
+              <input type="text" id="artId" class="form-control form-control-sm" placeholder="UUID o código propio">
+            </div>
+            <div class="mb-3">
+              <label class="form-label small fw-semibold">Nombre <span class="text-danger">*</span></label>
+              <input type="text" id="artNombre" class="form-control form-control-sm" placeholder="Nombre del artículo" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label small fw-semibold">Descripción</label>
+              <textarea id="artDesc" class="form-control form-control-sm" rows="2" placeholder="Descripción opcional"></textarea>
+            </div>
+            <div class="mb-3">
+              <label class="form-label small fw-semibold">URL de imagen</label>
+              <input type="url" id="artImg" class="form-control form-control-sm" placeholder="https://...">
+            </div>
+            <div class="row g-2">
+              <div class="col-6">
+                <label class="form-label small fw-semibold">Precio salida (€) <span class="text-danger">*</span></label>
+                <input type="number" id="artPrecio" class="form-control form-control-sm" min="0" step="0.01" placeholder="0.00" required>
+              </div>
+              <div class="col-6">
+                <label class="form-label small fw-semibold">Duración (seg) <span class="text-danger">*</span></label>
+                <input type="number" id="duracion" class="form-control form-control-sm" min="1" placeholder="300" required>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+          <button type="button" class="btn btn-primary" id="btnCrearSubasta">
+            <i class="bi bi-plus-circle"></i> Crear subasta
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script type="module" src="/js/subastas.js"></script>
+</body>
+</html>

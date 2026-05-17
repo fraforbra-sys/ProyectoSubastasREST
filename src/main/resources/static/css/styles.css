@@ -1,0 +1,107 @@
+:root {
+  --bs-primary: #0d6efd;
+}
+
+body {
+  background-color: #f4f6fb;
+  font-family: 'Segoe UI', system-ui, sans-serif;
+}
+
+/* ── Login ── */
+.login-wrapper {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, rgba(13,110,253,.10) 0%, rgba(108,117,125,.06) 100%);
+}
+
+.login-card {
+  width: 100%;
+  max-width: 440px;
+  border: none;
+  border-radius: 1.25rem;
+  box-shadow: 0 8px 32px rgba(13,110,253,.14);
+}
+
+/* ── Auction cards ── */
+.subasta-card {
+  border: none;
+  border-radius: 0.875rem;
+  transition: transform .2s ease, box-shadow .2s ease;
+}
+
+.subasta-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 14px 32px rgba(0,0,0,.13) !important;
+}
+
+/* ── FAB ── */
+.fab {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 18px rgba(13,110,253,.45);
+  z-index: 1050;
+  transition: transform .2s ease, box-shadow .2s ease;
+  line-height: 1;
+}
+
+.fab:hover {
+  transform: scale(1.12);
+  box-shadow: 0 6px 22px rgba(13,110,253,.55);
+}
+
+/* ── Navbar ── */
+.navbar {
+  box-shadow: 0 2px 10px rgba(0,0,0,.10);
+}
+
+/* ── Detail page ── */
+.precio-destacado {
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: var(--bs-primary);
+}
+
+.countdown {
+  font-size: 1.4rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: .02em;
+}
+
+.img-subasta {
+  width: 100%;
+  max-height: 420px;
+  object-fit: cover;
+  border-radius: 0.875rem;
+}
+
+/* ── Table ── */
+.table-hover tbody tr {
+  transition: background-color .12s ease;
+}
+
+/* ── Animations ── */
+.fade-in {
+  animation: fadeIn .3s ease both;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+
+/* ── Responsive ── */
+@media (max-width: 576px) {
+  .fab { bottom: 1.25rem; right: 1.25rem; }
+  .precio-destacado { font-size: 1.6rem; }
+}

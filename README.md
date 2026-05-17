@@ -6,7 +6,12 @@ Este proyecto es una migración del sistema de subastas online distribuido origi
 
 ## Descripción
 
-El sistema permite a los usuarios registrarse, autenticarse, crear subastas, realizar pujas y consultar el historial de subastas completadas, todo ello a través de una API REST con representación JSON.
+El sistema permite a los usuarios registrarse, autenticarse, crear subastas, realizar pujas y consultar el historial de subastas completadas. Incluye:
+
+- **API REST completa** con documentación OpenAPI/Swagger
+- **Interfaz web** integrada con Bootstrap 5 y JavaScript vanilla
+- **Auto-finalización** de subastas mediante timers programados
+- **Persistencia** en SQLite para usuarios e historial
 
 ---
 
@@ -16,6 +21,7 @@ El sistema permite a los usuarios registrarse, autenticarse, crear subastas, rea
 - **Servicios** (`@Service`): contienen la lógica de negocio. Las subastas activas se mantienen en memoria con un `ConcurrentHashMap`.
 - **DAOs**: acceso a la base de datos SQLite mediante JDBC para usuarios y subastas completadas.
 - **Base de datos**: SQLite (`db/subastas.db`), creada automáticamente al arrancar.
+- **Interfaz web**: HTML/CSS/JS servidos desde `src/main/resources/static/`.
 
 ---
 
@@ -41,10 +47,26 @@ src/main/java/com/subastas/
     ├── Puja.java
     ├── SubastaActiva.java
     ├── SubastaCompletada.java
-    ├── HistorialSubasta.java
+    ├── LoginRequest.java
     ├── CrearSubastaRequest.java
     ├── PujaRequest.java
     └── Usuario.java
+
+src/main/resources/
+├── static/
+│   ├── index.html
+│   ├── subastas.html
+│   ├── subasta.html
+│   ├── historial.html
+│   ├── css/
+│   │   └── styles.css
+│   └── js/
+│       ├── api.js
+│       ├── auth.js
+│       ├── subastas.js
+│       ├── subasta.js
+│       └── historial.js
+└── application.properties
 ```
 
 ---
@@ -85,12 +107,38 @@ src/main/java/com/subastas/
 .\mvnw.cmd spring-boot:run
 ```
 
-El servidor arranca en el puerto **9000**. La base de datos SQLite se inicializa automáticamente.
+El servidor arranca en el puerto **9000**. La base de datos SQLite se inicializa automáticamente con usuarios de prueba:
+- `admin` / `admin123`
+- `usuario1` / `pass1`
+- `usuario2` / `pass2`
+- `cliente` / `cliente123`
 
-Documentación interactiva disponible en:
+---
+
+## Interfaces disponibles
+
+### Interfaz web
+```
+http://localhost:9000/
+```
+
+**Funcionalidades:**
+- Login y registro de usuarios
+- Listado de subastas activas con filtros (nombre, precio, tiempo restante)
+- Creación de nuevas subastas
+- Vista detallada de subasta con:
+  - Contador de tiempo restante en vivo
+  - Historial de pujas
+  - Formulario para pujar
+  - Auto-refresco cada 3 segundos
+- Historial de subastas completadas con filtros
+
+### Documentación API (Swagger UI)
 ```
 http://localhost:9000/swagger-ui/index.html
 ```
+
+Interfaz interactiva para probar todos los endpoints de la API REST.
 
 ---
 
@@ -102,6 +150,8 @@ http://localhost:9000/swagger-ui/index.html
 - SQLite (sqlite-jdbc)
 - Spring Security Crypto (BCrypt)
 - SpringDoc OpenAPI (Swagger UI)
+- Bootstrap 5 (CDN)
+- JavaScript ES6 Modules
 
 ---
 
@@ -111,6 +161,29 @@ http://localhost:9000/swagger-ui/index.html
 |-----|------|
 | Interfaces remotas (`Remote`) | Controladores `@RestController` |
 | `UnicastRemoteObject` | Servicios `@Service` con Spring |
-| Callbacks Observer (`IObservadorCliente`) | Eliminado (REST es stateless) |
+| Callbacks Observer (`IObservadorCliente`) | Eliminado (REST es stateless, polling vía web) |
 | `rmiregistry` | Servidor HTTP embebido (Tomcat) |
 | Objetos `Serializable` por red | JSON via Jackson |
+| Cliente Java RMI | Interfaz web con Bootstrap + fetch API |
+
+---
+
+## Capturas de pantalla
+
+### Interfaz de login/registro
+Formulario con tabs Bootstrap para iniciar sesión o crear una cuenta nueva.
+
+### Listado de subastas
+Grid responsive con tarjetas de subastas activas, filtros de búsqueda y botón flotante para crear nuevas subastas.
+
+### Detalle de subasta
+Vista con imagen del artículo, información completa, contador en tiempo real, historial de pujas y formulario para pujar.
+
+### Historial
+Tabla con todas las subastas completadas, filtrable por comprador.
+
+---
+
+## Licencia
+
+Proyecto educativo - Universidad de Sevilla

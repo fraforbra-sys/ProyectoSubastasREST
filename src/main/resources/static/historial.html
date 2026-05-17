@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SubastasApp – Historial</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container-fluid">
+      <a class="navbar-brand fw-bold" href="/subastas.html">
+        <i class="bi bi-hammer"></i> SubastasApp
+      </a>
+      <div class="d-flex align-items-center gap-3 ms-auto">
+        <span class="text-white d-none d-sm-inline">
+          <i class="bi bi-person-circle"></i> <span id="navUser"></span>
+        </span>
+        <a href="/subastas.html" class="btn btn-outline-light btn-sm">
+          <i class="bi bi-hammer"></i> Subastas
+        </a>
+        <button id="btnLogout" class="btn btn-outline-light btn-sm">
+          <i class="bi bi-box-arrow-right"></i> Cerrar sesión
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container py-4">
+
+    <!-- Header card -->
+    <div class="card bg-primary text-white shadow mb-4">
+      <div class="card-body d-flex align-items-center gap-3">
+        <i class="bi bi-archive-fill display-4"></i>
+        <div>
+          <h4 class="mb-0 fw-bold">Historial de subastas</h4>
+          <p class="mb-0 opacity-75 small">
+            <span id="totalCount" class="fw-bold fs-5">0</span> subastas completadas en total
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="d-flex gap-2 mb-4">
+      <button class="btn btn-primary" id="btnVerTodas">
+        <i class="bi bi-list-ul"></i> Ver todas
+      </button>
+      <button class="btn btn-outline-primary" id="btnVerMias">
+        <i class="bi bi-trophy-fill"></i> Solo mis victorias
+      </button>
+    </div>
+
+    <!-- Empty state -->
+    <div id="emptyState" class="d-none text-center py-5">
+      <i class="bi bi-inbox display-1 text-muted"></i>
+      <p class="text-muted mt-3 fs-5">No hay subastas completadas</p>
+    </div>
+
+    <!-- Table -->
+    <div class="table-responsive shadow-sm rounded">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-dark">
+          <tr>
+            <th style="width:80px">Imagen</th>
+            <th>Artículo</th>
+            <th>Precio final</th>
+            <th>Comprador</th>
+            <th>Fecha de finalización</th>
+          </tr>
+        </thead>
+        <tbody id="historialBody">
+          <tr>
+            <td colspan="5" class="text-center py-4">
+              <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Cargando...</span>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="text-muted small mt-2"><i class="bi bi-info-circle"></i> Haz clic en una fila para ver el detalle completo.</p>
+  </div>
+
+  <!-- Detail Modal -->
+  <div class="modal fade" id="detalleModal" tabindex="-1" aria-labelledby="detalleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header bg-primary text-white">
+          <h5 class="modal-title" id="detalleModalLabel">
+            <i class="bi bi-info-circle-fill"></i> Detalle de subasta completada
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div class="row g-3">
+            <div class="col-md-5">
+              <img id="modalImg" src="" alt="" class="img-fluid rounded shadow"
+                   onerror="this.src='https://placehold.co/500x350?text=Sin+imagen'">
+            </div>
+            <div class="col-md-7">
+              <h4 id="modalNombre" class="fw-bold mb-3"></h4>
+              <table class="table table-borderless table-sm">
+                <tbody>
+                  <tr>
+                    <td class="text-muted fw-semibold" style="width:40%">Precio final:</td>
+                    <td class="text-primary fw-bold fs-5" id="modalPrecio"></td>
+                  </tr>
+                  <tr>
+                    <td class="text-muted fw-semibold">Comprador:</td>
+                    <td id="modalComprador"></td>
+                  </tr>
+                  <tr>
+                    <td class="text-muted fw-semibold">Fecha:</td>
+                    <td id="modalFecha"></td>
+                  </tr>
+                  <tr>
+                    <td class="text-muted fw-semibold">ID Subasta:</td>
+                    <td class="small text-muted font-monospace" id="modalId" style="word-break:break-all;"></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            <i class="bi bi-x"></i> Cerrar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script type="module" src="/js/historial.js"></script>
+</body>
+</html>

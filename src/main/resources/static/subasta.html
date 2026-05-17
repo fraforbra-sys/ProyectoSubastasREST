@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SubastasApp – Detalle de subasta</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-dark bg-primary">
+    <div class="container">
+      <a href="/subastas.html" class="btn btn-outline-light btn-sm me-3">
+        <i class="bi bi-arrow-left"></i> Volver
+      </a>
+      <span class="navbar-brand mb-0 h1 fs-5">
+        <i class="bi bi-hammer"></i> Detalle de subasta
+      </span>
+      <span class="text-white small ms-auto d-none d-sm-inline">
+        <i class="bi bi-person-circle"></i> <span id="navUser"></span>
+      </span>
+    </div>
+  </nav>
+
+  <div class="container py-4" id="mainContent">
+    <div class="row g-4">
+
+      <!-- Image -->
+      <div class="col-md-5">
+        <img id="artImg" src="https://placehold.co/600x400?text=Cargando..."
+             alt="Imagen del artículo" class="img-subasta shadow"
+             onerror="this.src='https://placehold.co/600x400?text=Sin+imagen'">
+      </div>
+
+      <!-- Info -->
+      <div class="col-md-7">
+        <div class="d-flex flex-wrap align-items-center gap-2 mb-2">
+          <h2 id="artNombre" class="mb-0">...</h2>
+          <span id="badgeActiva" class="badge bg-success fs-6">Activa</span>
+        </div>
+        <p id="artDesc" class="text-muted"></p>
+
+        <!-- Stats card -->
+        <div class="card shadow-sm mb-3">
+          <div class="card-body">
+            <div class="row text-center g-2">
+              <div class="col-4">
+                <div class="text-muted small mb-1">Precio actual</div>
+                <div class="precio-destacado" id="precioActual">–</div>
+              </div>
+              <div class="col-4">
+                <div class="text-muted small mb-1">Líder actual</div>
+                <div class="fw-bold fs-5" id="liderActual">–</div>
+              </div>
+              <div class="col-4">
+                <div class="text-muted small mb-1">Tiempo restante</div>
+                <span id="tiempoBadge" class="badge bg-success fs-6">
+                  <span class="countdown" id="tiempoRestante">--:--</span>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <p class="text-muted small mb-3">
+          <i class="bi bi-bar-chart-fill text-primary"></i>
+          <span id="numPujas">0</span> pujas realizadas
+        </p>
+
+        <!-- Alerta finalizada -->
+        <div class="alert alert-secondary d-none" id="alerta-finalizada">
+          <i class="bi bi-check-circle-fill"></i>
+          <strong>Esta subasta ha finalizado.</strong> Consulta el historial para ver el resultado.
+        </div>
+
+        <!-- Puja form -->
+        <div id="formPuja">
+          <div id="pujaAlert"></div>
+          <div class="card shadow-sm mb-3">
+            <div class="card-body">
+              <h6 class="card-title fw-semibold">
+                <i class="bi bi-hand-index-thumb-fill text-primary"></i> Realizar puja
+              </h6>
+              <div class="input-group input-group-lg">
+                <span class="input-group-text fw-bold">€</span>
+                <input type="number" id="cantidadPuja" class="form-control"
+                       placeholder="Introduce tu puja..." min="0" step="0.01">
+                <button class="btn btn-primary" id="btnPujar">
+                  <i class="bi bi-hand-index-thumb"></i> Pujar
+                </button>
+              </div>
+              <div class="form-text">La puja debe superar el precio actual.</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Finalizar -->
+        <button class="btn btn-danger" id="btnFinalizar">
+          <i class="bi bi-stop-circle-fill"></i> Finalizar subasta
+        </button>
+      </div>
+    </div>
+
+    <!-- Bid history -->
+    <div class="row mt-5">
+      <div class="col-12">
+        <h5 class="fw-semibold mb-3">
+          <i class="bi bi-list-ul text-primary"></i> Historial de pujas
+        </h5>
+        <div class="table-responsive">
+          <table class="table table-hover align-middle shadow-sm rounded">
+            <thead class="table-primary">
+              <tr>
+                <th><i class="bi bi-person"></i> Usuario</th>
+                <th><i class="bi bi-currency-euro"></i> Cantidad</th>
+                <th><i class="bi bi-clock"></i> Fecha / Hora</th>
+              </tr>
+            </thead>
+            <tbody id="pujasBody">
+              <tr>
+                <td colspan="3" class="text-center text-muted py-4">
+                  <div class="spinner-border spinner-border-sm text-primary" role="status"></div>
+                  Cargando...
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script type="module" src="/js/subasta.js"></script>
+</body>
+</html>
