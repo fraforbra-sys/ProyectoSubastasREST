@@ -103,6 +103,12 @@ src/main/resources/
 
 ## Ejecución
 
+**Linux/Mac:**
+```bash
+./mvnw spring-boot:run
+```
+
+**Windows:**
 ```powershell
 .\mvnw.cmd spring-boot:run
 ```
@@ -165,25 +171,3 @@ Interfaz interactiva para probar todos los endpoints de la API REST.
 | `rmiregistry` | Servidor HTTP embebido (Tomcat) |
 | Objetos `Serializable` por red | JSON via Jackson |
 | Cliente Java RMI | Interfaz web con Bootstrap + fetch API |
-
----
-
-## Capturas de pantalla
-
-### Interfaz de login/registro
-Formulario con tabs Bootstrap para iniciar sesión o crear una cuenta nueva.
-
-### Listado de subastas
-Grid responsive con tarjetas de subastas activas, filtros de búsqueda y botón flotante para crear nuevas subastas.
-
-### Detalle de subasta
-Vista con imagen del artículo, información completa, contador en tiempo real, historial de pujas y formulario para pujar.
-
-### Historial
-Tabla con todas las subastas completadas, filtrable por comprador.
-
----
-
-## Licencia
-
-Proyecto educativo - Universidad de Sevilla
